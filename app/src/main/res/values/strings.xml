@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">ITFD</string>
+    <string name="name">INCOME TAX FRAUD DETECTION</string>
+    <string name="hint_name">UserName</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_btn1">SUBMIT</string>
+
+    <string name="text">SELECT THE INPUTS</string>
+    <string name="text1">Select your occupation:</string>
+    <string name="text2">Choose your MaritalStatus:</string>
+    <string name="text3">Select your Race:</string>
+    <string name="text4">Select your NativeCountry:</string>
+    <string name="text5">Choose your gender:</string>
+    <string name="text6">Select your Declared Income range:</string>
+    <string name="text7">Select your Actual Income range:</string>
+
+    <string name="edit_1">Enter your age</string>
+    <string name="edit_2">Enter your HourPerWeek</string>
+    <string name="auto_1">Start typing your Education</string>
+    <string name="auto_2">Start typing your WorkClass</string>
+    <string name="spinner_1">Occupation</string>
+    <string name="spinner_2">MaritalStatus</string>
+    <string name="spinner_3">Race</string>
+    <string name="spinner_4">NativeCountry</string>
+    <string name="spinner_5">DeclaredIncome</string>
+    <string name="spinner_6">ActualIncome</string>
+    <string name="hint_btn2">PREDICT</string>
+    <string name="textview">TextView</string>
+    <string name="male">male</string>
+    <string name="female">female</string>
+    <string name="hint_btn3">BACK</string>
+
+    <string-array name="Education">
+        <item>Bachelors</item>
+        <item>Masters</item>
+        <item>Doctorate</item>
+        <item>HS-grad</item>
+    </string-array>
+    <string-array name="WorkClass">
+        <item>Private</item>
+        <item>Self-emp-not-inc</item>
+        <item>Local-gov</item>
+        <item>Federal-gov</item>
+    </string-array>
+    <string-array name="Occupation">
+        <item>Exec-managerial</item>
+        <item>Tech-support</item>
+        <item>Sales</item>
+        <item>Other-service</item>
+    </string-array>
+    <string-array name="MaritalStatus">
+        <item>Never-married</item>
+        <item>Married-civ-spouse</item>
+        <item>Divorced</item>
+        <item>Separated</item>
+    </string-array>
+    <string-array name="Race">
+        <item>Black</item>
+        <item>White</item>
+        <item>Asian-Pac-Islander</item>
+        <item>Amer-Indian-Eskimo</item>
+    </string-array>
+    <string-array name="NativeCountry">
+        <item>United-States</item>
+        <item>Japan</item>
+        <item>India</item>
+        <item>Germany</item>
+    </string-array>
+    <string-array name="DeclaredIncome">
+        <item>&gt;50K</item>
+        <item>&lt;=50K</item>
+    </string-array>
+    <string-array name="ActualIncome">
+        <item>&gt;50K</item>
+        <item>&lt;=50K</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/secondbackground"
+    tools:context=".PredictionActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text"
+        android:textSize="15sp"
+        android:textStyle="italic"
+        android:textColor="@color/purple_700"
+        android:gravity="center"
+        android:textAlignment="center" />
+
+    <EditText
+        android:id="@+id/ed_1"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:gravity="center"
+        android:hint="@string/edit_1"
+        android:inputType="textPersonName"
+        android:minHeight="15dp"
+        android:textColor="@color/black"
+        android:textColorHint="#747679"
+        android:textSize="15sp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/auto_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="@string/auto_1"
+        android:inputType="textPersonName"
+        android:minHeight="15dp"
+        android:textColor="@color/black"
+        android:textColorHint="#747679"
+        android:textSize="15sp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/auto_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="@string/auto_2"
+        android:inputType="textPersonName"
+        android:minHeight="15dp"
+        android:textColor="@color/black"
+        android:textColorHint="#747679"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text1"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/black" />
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/spinner_1"
+        android:gravity="center"
+        android:minHeight="15dp"
+        android:inputType="textPersonName"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text2"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/black" />
+    <Spinner
+        android:id="@+id/spinner2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/spinner_2"
+        android:gravity="center"
+        android:minHeight="15dp"
+        android:inputType="textPersonName"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text3"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/black" />
+    <Spinner
+        android:id="@+id/spinner3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/spinner_3"
+        android:gravity="center"
+        android:minHeight="15dp"
+        android:inputType="textPersonName"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text4"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/black" />
+    <Spinner
+        android:id="@+id/spinner4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/spinner_4"
+        android:gravity="center"
+        android:minHeight="15dp"
+        android:inputType="textPersonName"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text5"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/black" />
+
+    <RadioGroup
+        android:id="@+id/rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/rb1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="15dp"
+            android:text="@string/male" />
+
+        <RadioButton
+            android:id="@+id/rb2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="15dp"
+            android:text="@string/female" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/ed_2"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:gravity="center"
+        android:hint="@string/edit_2"
+        android:inputType="textPersonName"
+        android:minHeight="15dp"
+        android:textColor="@color/black"
+        android:textColorHint="#747679"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text6"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/black" />
+    <Spinner
+        android:id="@+id/spinner5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/spinner_5"
+        android:gravity="center"
+        android:inputType="textPersonName"
+        android:minHeight="15dp"
+        android:textColor="@color/black"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text7"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/black" />
+    <Spinner
+        android:id="@+id/spinner6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/spinner_6"
+        android:gravity="center"
+        android:minHeight="15dp"
+        android:inputType="textPersonName"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn1"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:minHeight="20dp"
+        android:onClick="Predict"
+        android:text="@string/hint_btn2" />
+    <Button
+        android:id="@+id/btn2"
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:minHeight="20dp"
+        android:onClick="Back"
+        android:text="@string/hint_btn3" />
+</LinearLayout>
