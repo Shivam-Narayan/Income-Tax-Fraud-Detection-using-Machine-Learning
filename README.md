@@ -28,7 +28,7 @@ This project focuses on developing a machine learning model to identify income t
 ## Results
 - **Logistic Regression** achieved the highest accuracy in detecting tax fraud.
 - Outperformed existing methods by capturing complex patterns in financial data.
-- Detailed comparison metrics for all algorithms are provided in the [project report](link_to_report.md).
+- Detailed comparison metrics for all algorithms are provided in the [project report](Report_shivam.pdf).
 
 ## Impact
 - **Reduces Revenue Losses**: Helps governments identify fraudulent tax returns efficiently.
