@@ -44,7 +44,7 @@ This project focuses on developing a machine learning model to identify income t
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your_username/tax-fraud-detection.git
+   git clone https://github.com/Shivam-Narayan/Uncovered_Income_Tax_Fraud_Detection.git
 
 2. Install dependendies:
 '''bash
