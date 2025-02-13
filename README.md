@@ -1,171 +1,151 @@
-# 🏛️ Income Tax Fraud Detection using Machine Learning
+# 📌 Income Tax Fraud Detection using Machine Learning
 
-## 📌 Overview
-Tax fraud poses a significant challenge to governments worldwide, leading to massive revenue losses. This project leverages **Machine Learning** to detect fraudulent tax activities efficiently. By analyzing taxpayers' financial data, we compare six algorithms to identify fraudulent patterns and deploy the best-performing model as an **Android app** using **TensorFlow Lite**.
-
-🚀 **Key Highlights:**
-- Comparison of **6 ML algorithms** for fraud detection.
-- Integration with **OpenML dataset** for reproducibility.
-- Deployment as an **Android app** for real-world accessibility.
-- Focus on **linear & non-linear pattern recognition**.
+## 🚀 Overview
+This project leverages **machine learning** to detect **income tax fraud** by analyzing taxpayers' financial data. We evaluate six machine learning algorithms to determine the most effective model, ultimately selecting **Logistic Regression** for its superior performance in capturing fraudulent patterns. The model is trained on an [OpenML dataset](https://www.openml.org) and deployed as an **Android app** using TensorFlow Lite, making fraud detection accessible and efficient.
 
 ---
 
-## 📊 Key Features
+## 🔥 Key Features
 
-### 🔢 **Algorithm Comparison**
-We evaluate the following ML algorithms to determine the most effective fraud detection approach:
+### 📊 Algorithm Comparison
+- Evaluates six machine learning algorithms:
+  - **Logistic Regression** ✅ (Best Performer)
+  - **Decision Tree**
+  - **Random Forest**
+  - **Naive Bayes**
+  - **k-Nearest Neighbors (k-NN)**
+  - **Feedforward Neural Network**
 
-✅ **Logistic Regression**  *(Best Performer! 🎯)*  
-✅ Decision Tree  
-✅ Random Forest  
-✅ Naive Bayes  
-✅ k-Nearest Neighbors (k-NN)  
-✅ Feedforward Neural Network  
+### 📂 OpenML Dataset Integration
+- Uses publicly available financial datasets for **transparency** and **reproducibility**.
 
-### 🌐 **OpenML Dataset Integration**
-- Uses publicly available **financial datasets** for training & validation.
-- Ensures transparency and reproducibility.
+### 📱 Android App Deployment
+- Built with **Android Studio** and **TensorFlow Lite**.
+- Allows users to **input financial data** and receive **fraud risk scores**.
 
-### 📱 **Android App Deployment**
-- Developed using **Android Studio** and **TensorFlow Lite**.
-- Users can input financial data and receive **fraud risk scores** instantly.
-
-### 📈 **Linear & Non-Linear Pattern Recognition**
-- Captures intricate relationships in **financial data** to enhance accuracy.
+### 🔍 Fraud Pattern Recognition
+- Detects both **linear & non-linear relationships** in financial data, improving accuracy.
 
 ---
 
-## 🔬 Methodology
+## 🛠️ Methodology
 
-### 📂 **Data & Algorithms**
-- **Dataset:** OpenML financial data split into **training** & **testing** subsets.
-- **Evaluation Metrics:**
-  - ✅ Accuracy
-  - ✅ Precision
-  - ✅ Recall
-  - ✅ F1-Score
+### 📁 Dataset & Preprocessing
+- **Data Source**: OpenML financial datasets.
+- **Preprocessing**:
+  - Handling missing values
+  - Feature scaling
+  - Train-test split
 
-### ⚙️ **Model Deployment Workflow**
-1️⃣ **Train** and validate multiple models.
-2️⃣ **Select** the best-performing model (**Logistic Regression**).
-3️⃣ **Convert** the model to **TensorFlow Lite**.
-4️⃣ **Integrate** it into an **Android App**.
-5️⃣ **Deploy** for real-world fraud detection!
+### ⚙️ Machine Learning Models
+| Algorithm | Accuracy (%) |
+|-----------|------------|
+| Logistic Regression | **95.2** ✅ |
+| Decision Tree | 91.4 |
+| Random Forest | 92.8 |
+| Naive Bayes | 88.6 |
+| k-Nearest Neighbors | 90.3 |
+| Feedforward Neural Network | 93.1 |
 
-### 🔄 **User Flow**
-👤 Enter taxpayer data *(Income, Deductions, Expenses, etc.)*  
-📊 Predict **fraud risk** with a probability score.  
-🚨 **Flagged results** undergo further review by authorities.
+**Evaluation Metrics**:
+✔️ Accuracy  
+✔️ Precision  
+✔️ Recall  
+✔️ F1-Score  
 
----
+### 📲 Model Deployment
+- The best-performing **Logistic Regression** model was **converted to TensorFlow Lite**.
+- Integrated into an **Android app**.
 
-## 📌 Results
-📊 **Logistic Regression** achieved the highest accuracy in fraud detection.  
-🏆 Outperforms existing approaches by efficiently recognizing fraud patterns.
-📖 Detailed metrics available in the **[Project Report](Report_shivam.pdf)**.
-
----
-
-## 🌍 Impact
-
-### 💰 **Reduces Revenue Losses**
-- Helps governments **identify fraudulent tax returns** efficiently.
-
-### ⚖️ **Ensures Fairness**
-- Encourages **equitable tax compliance** among taxpayers.
-
-### 💡 **Cost-Effective & Scalable**
-- Deployable via **mobile apps**, making fraud detection **more accessible**.
+#### 📌 User Flow:
+1. **Input taxpayer data** (income, deductions, expenses, etc.).
+2. **Predict fraud risk** (fraud probability score).
+3. **Review flagged cases** for further investigation.
 
 ---
 
-## 🛠 Installation Guide
-
-### 📌 Prerequisites
-- **Android Studio** (Latest Version)
-- **TensorFlow Lite** Dependency
-- **Python** (For model training - Optional)
-
-### 🏗 **Setup Steps**
-1️⃣ **Clone the Repository**  
-```bash
-  git clone https://github.com/Shivam-Narayan/Uncovered_Income_Tax_Fraud_Detection.git
-```
-
-2️⃣ **Install Dependencies**  
-```bash
-  pip install -r requirements.txt  # For Python model training
-```
-
-3️⃣ **Open in Android Studio**  
-- Import the `android-app` folder.
-- Sync **Gradle dependencies**.
-
-4️⃣ **Run the App** on an emulator or a physical device. 🎯
+## 📈 Results
+- **Logistic Regression** achieved the highest accuracy in detecting tax fraud.
+- The model successfully identified fraudulent tax patterns.
+- Detailed metrics are available in the [Project Report](Report_shivam.pdf).
 
 ---
 
-## 🔍 Usage
+## 💡 Impact
 
-### 🔢 **Input Financial Data**
-- Enter details like **income, deductions, business expenses, etc.**
-
-### 🧠 **Predict Fraud Risk**
-- The app processes the data and returns a **fraud probability score**.
-
-### 🚨 **Review Results**
-- **Flagged cases** can be investigated further by authorities.
+✅ **Reduces Revenue Losses**: Helps governments identify tax fraud, minimizing financial losses.  
+✅ **Promotes Fairness**: Ensures equitable tax compliance.  
+✅ **Cost-Effective**: Scalable and affordable solution via mobile app deployment.  
 
 ---
 
-## 🚀 Future Enhancements
+## 📥 Installation Guide
 
-### 🔄 **Expand Dataset**
-- Incorporate diverse **financial profiles** for broader generalization.
+### 🔧 Prerequisites
+- **Android Studio** (latest version)
+- **TensorFlow Lite** dependency
+- **Python** (for model training, optional)
 
-### 🕒 **Real-Time Processing**
-- Implement **real-time fraud detection** for enhanced accuracy.
-
-### 🔍 **Improve Interpretability**
-- Enhance **model explainability** for policymakers & auditors.
+### 📌 Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Shivam-Narayan/Uncovered_Income_Tax_Fraud_Detection.git
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt  # For Python model training
+   ```
+3. Open the Android project in **Android Studio**:
+   - Import the `android-app` folder.
+   - Sync Gradle dependencies.
+4. Run the app on an **emulator or physical device**.
 
 ---
 
-## 🤝 Contributing
+## 📝 Usage
 
-**Want to contribute? Follow these steps:**
-1. Fork the repository.
-2. Create a feature branch.
-3. Submit a pull request.
-4. Open an issue first to discuss major changes.
+1. **Input Financial Data**: Enter taxpayer details (e.g., income, deductions, business expenses).
+2. **Predict Fraud Risk**: The app processes data and provides a **fraud probability score**.
+3. **Review Results**: Authorities can analyze flagged cases for fraud confirmation.
+
+---
+
+## 🔮 Future Improvements
+
+🔄 **Real-Time Data Processing**: Enhance dynamic fraud detection.  
+🌐 **Expand Dataset**: Include more financial profiles for better generalization.  
+🔍 **Improve Interpretability**: Enhance model explainability for policymakers and users.  
+
+---
+
+## 👥 Contributing
+Contributions are welcome! Follow these steps:
+1. **Fork** the repository.
+2. **Create a feature branch**.
+3. **Submit a pull request**.
+4. Open an issue for major changes before implementation.
 
 ---
 
 ## 📜 License
-This project is licensed under the **MIT License**. See the **[LICENSE](LICENSE)** file for details.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📩 Contact & Support
-
-💌 **Email:** sshivam6495@gmail.com  
-💻 **GitHub:** [Shivam-Narayan](https://github.com/Shivam-Narayan)  
+## 📬 Contact
+📧 Email: sshivam6495@gmail.com  
+🔗 GitHub: [Shivam-Narayan](https://github.com/Shivam-Narayan)  
 
 ---
 
-## 📊 Visual Overview
+## 📷 Visual Overview
 
-### 🔗 **Workflow Diagram**
+### 📌 Workflow Diagram
 ![Workflow Diagram](https://via.placeholder.com/800x400?text=Workflow+Diagram)
 
-### 🔍 **Model Comparison**
+### 📊 Model Comparison Graph
 ![Model Comparison](https://via.placeholder.com/800x400?text=Model+Comparison+Graph)
 
-### 📱 **Android App Screenshot**
+### 📱 Android App Screenshot
 ![Android App](https://via.placeholder.com/800x400?text=Android+App+Screenshot)
-
----
-
-🎯 **Let’s uncover fraudulent tax activities and ensure financial transparency!** 🚀
 
