@@ -15,6 +15,7 @@ Tax fraud poses a significant challenge to governments worldwide, leading to mas
 
 ### 🔢 **Algorithm Comparison**
 We evaluate the following ML algorithms to determine the most effective fraud detection approach:
+
 ✅ **Logistic Regression**  *(Best Performer! 🎯)*  
 ✅ Decision Tree  
 ✅ Random Forest  
