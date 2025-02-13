@@ -48,6 +48,7 @@ This project leverages **machine learning** to detect **income tax fraud** by an
 | Feedforward Neural Network | 93.1 |
 
 **Evaluation Metrics**:
+
 ✔️ Accuracy  
 ✔️ Precision  
 ✔️ Recall  
