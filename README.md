@@ -38,21 +38,21 @@ This project leverages **machine learning** to detect **income tax fraud** by an
   - Train-test split
 
 ### ⚙️ Machine Learning Models
-| Algorithm | Accuracy (%) |
-|-----------|------------|
-| Logistic Regression | **95.2** ✅ |
-| Decision Tree | 91.4 |
-| Random Forest | 92.8 |
-| Naive Bayes | 88.6 |
-| k-Nearest Neighbors | 90.3 |
-| Feedforward Neural Network | 93.1 |
+| Model                        | Accuracy | Precision | Recall | F1 Score |
+|------------------------------|----------|------------|---------|------------|
+| **Logistic Regression**       | **0.8408** | **0.7127** | **0.5612** | **0.6279** ✅ |
+| Decision Tree                | 0.7877   | 0.5598     | 0.5282  | 0.5436    |
+| Random Forest                | 0.8170   | 0.6390     | 0.5406  | 0.5857    |
+| Feed Forward Neural Network  | 0.8151   | 0.6060     | 0.6506  | 0.6275    |
+| k-Nearest Neighbors          | 0.8229   | 0.6442     | 0.5808  | 0.6109    |
+| Naive Bayes                  | 0.6092   | 0.3721     | 0.9204  | 0.5299    |
 
 **Evaluation Metrics**:
 
-✔️ Accuracy  
-✔️ Precision  
-✔️ Recall  
-✔️ F1-Score  
+✅ Accuracy  
+✅ Precision  
+✅ Recall  
+✅ F1-Score  
 
 ### 📲 Model Deployment
 - The best-performing **Logistic Regression** model was **converted to TensorFlow Lite**.
@@ -80,7 +80,7 @@ This project leverages **machine learning** to detect **income tax fraud** by an
 
 ---
 
-## 📥 Installation Guide
+## 📝 Installation Guide
 
 ### 🔧 Prerequisites
 - **Android Studio** (latest version)
@@ -103,7 +103,7 @@ This project leverages **machine learning** to detect **income tax fraud** by an
 
 ---
 
-## 📝 Usage
+## 🗂 Usage
 
 1. **Input Financial Data**: Enter taxpayer details (e.g., income, deductions, business expenses).
 2. **Predict Fraud Risk**: The app processes data and provides a **fraud probability score**.
@@ -128,18 +128,18 @@ Contributions are welcome! Follow these steps:
 
 ---
 
-## 📜 License
+## 💜 License
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📬 Contact
+## 🐮 Contact
 📧 Email: sshivam6495@gmail.com  
 🔗 GitHub: [Shivam-Narayan](https://github.com/Shivam-Narayan)  
 
 ---
 
-## 📷 Visual Overview
+## 🖼️ Visual Overview
 
 ### 📌 Workflow Diagram
 ![Workflow Diagram](https://via.placeholder.com/800x400?text=Workflow+Diagram)
