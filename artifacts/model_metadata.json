@@ -1,0 +1,13 @@
+{
+  "model_family": "Gradient Boosting",
+  "holdout_metrics": {
+    "f1": 0.7082824760244115,
+    "roc_auc": 0.9247656138210918,
+    "avg_precision": 0.8217607690948469
+  },
+  "best_params": {
+    "classifier__n_estimators": 300,
+    "classifier__max_depth": 4,
+    "classifier__learning_rate": 0.03
+  }
+}
