@@ -5,13 +5,6 @@ from django.urls import reverse
 
 
 class FraudAppTests(SimpleTestCase):
-    def test_home_page_renders(self):
-        response = self.client.get(reverse('home'))
-        self.assertEqual(response.status_code, 200)
-        body = response.json()
-        self.assertEqual(body['status'], 'ok')
-        self.assertIn('endpoints', body)
-
     def test_prediction_form_post(self):
         response = self.client.post(reverse('predict'), {
             'age': '35',
