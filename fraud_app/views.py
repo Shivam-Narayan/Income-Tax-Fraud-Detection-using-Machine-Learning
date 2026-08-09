@@ -4,8 +4,11 @@ from pathlib import Path
 import joblib
 import pandas as pd
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
+from drf_spectacular.utils import extend_schema
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.serializers import BooleanField, CharField, FloatField, IntegerField, JSONField, Serializer
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / 'fraud_app' / 'model.pkl'
@@ -32,69 +35,94 @@ METADATA = _load_metadata()
 DECISION_THRESHOLD = float(METADATA.get('decision_threshold', DEFAULT_THRESHOLD))
 
 
-def home(request):
 def _format_prediction(label, probability):
     is_fraud = label == POSITIVE_LABEL or probability >= DECISION_THRESHOLD
     return 'Likely fraud' if is_fraud else 'Likely safe'
 
 
-def _parse_payload(request):
-    content_type = (request.content_type or '').split(';')[0].strip().lower()
-    if content_type == 'application/json':
-        try:
-            return json.loads(request.body.decode('utf-8')) if request.body else {}
-        except json.JSONDecodeError as exc:
-            raise ValueError(f'Invalid JSON body: {exc}') from exc
-    return request.POST.dict()
+class PredictionInputSerializer(Serializer):
+    age = IntegerField()
+    workclass = CharField()
+    education_num = IntegerField()
+    marital_status = CharField()
+    occupation = CharField()
+    relationship = CharField()
+    race = CharField()
+    sex = CharField()
+    capital_gain = IntegerField()
+    capital_loss = IntegerField()
+    hours_per_week = IntegerField()
+    native_country = CharField()
 
 
-def _build_feature_row(payload):
-    int_fields = ('age', 'education-num', 'capital-gain', 'capital-loss', 'hours-per-week')
-    data = {
-        'age': payload.get('age', 0),
-        'workclass': payload.get('workclass', 'Private'),
-        'education-num': payload.get('education-num', 0),
-        'marital-status': payload.get('marital-status', 'Never-married'),
-        'occupation': payload.get('occupation', 'Other-service'),
-        'relationship': payload.get('relationship', 'Not-in-family'),
-        'race': payload.get('race', 'White'),
-        'sex': payload.get('sex', 'Male'),
-        'capital-gain': payload.get('capital-gain', 0),
-        'capital-loss': payload.get('capital-loss', 0),
-        'hours-per-week': payload.get('hours-per-week', 0),
-        'native-country': payload.get('native-country', 'United-States'),
-    }
-    try:
-        for field in int_fields:
-            data[field] = int(data[field])
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f'Invalid numeric field: {exc}') from exc
-    return data
+class PredictionResponseSerializer(Serializer):
+    prediction = CharField()
+    probability = FloatField()
+    threshold = FloatField()
+    model_loaded = BooleanField()
+    data = JSONField()
 
 
-@csrf_exempt
-@require_http_methods(['POST'])
+def home(request):
+    return JsonResponse({
+        'message': 'App is running',
+        'status': 'ok',
+    })
+
+
+@extend_schema(
+    request=PredictionInputSerializer,
+    responses=PredictionResponseSerializer,
+)
+@api_view(['POST'])
 def predict(request):
-    try:
-        payload = _parse_payload(request)
-        data = _build_feature_row(payload)
-    except ValueError as exc:
-        return JsonResponse({'error': str(exc)}, status=400)
+    incoming = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
+    field_aliases = {
+        'education-num': 'education_num',
+        'marital-status': 'marital_status',
+        'capital-gain': 'capital_gain',
+        'capital-loss': 'capital_loss',
+        'hours-per-week': 'hours_per_week',
+        'native-country': 'native_country',
+    }
+    for hyphen_key, underscore_key in field_aliases.items():
+        if hyphen_key in incoming and underscore_key not in incoming:
+            incoming[underscore_key] = incoming[hyphen_key]
 
-    df = pd.DataFrame([data])
+    serializer = PredictionInputSerializer(data=incoming)
+    serializer.is_valid(raise_exception=True)
+    validated = serializer.validated_data
+
+    payload = {
+        'age': validated['age'],
+        'workclass': validated['workclass'],
+        'education-num': validated['education_num'],
+        'marital-status': validated['marital_status'],
+        'occupation': validated['occupation'],
+        'relationship': validated['relationship'],
+        'race': validated['race'],
+        'sex': validated['sex'],
+        'capital-gain': validated['capital_gain'],
+        'capital-loss': validated['capital_loss'],
+        'hours-per-week': validated['hours_per_week'],
+        'native-country': validated['native_country'],
+    }
+
+    df = pd.DataFrame([payload])
 
     if MODEL is None:
-        probability = 0.58 if data['capital-gain'] + data['capital-loss'] >= 5000 else 0.42
+        probability = 0.58 if payload['capital-gain'] + payload['capital-loss'] >= 5000 else 0.42
         prediction = _format_prediction('', probability)
     else:
         probability = float(MODEL.predict_proba(df)[0, 1])
         predicted_label = POSITIVE_LABEL if probability >= DECISION_THRESHOLD else '<=50K'
         prediction = _format_prediction(predicted_label, probability)
 
-    return JsonResponse({
+    response_data = {
         'prediction': prediction,
         'probability': round(probability, 3),
         'threshold': DECISION_THRESHOLD,
         'model_loaded': MODEL is not None,
-        'data': data,
-    })
+        'data': payload,
+    }
+    return Response(response_data, status=status.HTTP_200_OK)

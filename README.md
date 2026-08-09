@@ -1,23 +1,23 @@
 # 📌 Income Tax Fraud Detection using Django
 
 ## 🚀 Overview
-This project provides a minimal Django API for predicting income class based on Census Income features. The current implementation exposes a single POST endpoint for testing predictions and does not include a web form or Swagger UI.
+This repository contains a minimal Django API that exposes a single POST endpoint for predicting income class from Census Income features. It is built for testing and demonstration, not production use.
 
 ---
 
-## 🔧 What changed
-- Uses a Django app with a single API endpoint: `POST /predict/`
-- Removed extra routes and Swagger/OpenAPI support for a simpler testable flow
-- Keeps the census-income dataset and training notebook as the model foundation
-- Includes Django test coverage for the prediction endpoint
+## 🔧 Current behavior
+- The app serves one POST-only endpoint: `POST /predict/`
+- Requests are accepted as JSON and mapped to Census Income input fields
+- No frontend, no Swagger/OpenAPI UI, and no homepage endpoint are provided
+- The prediction endpoint returns a simple JSON response with probability and decision text
 
 ---
 
 ## 🧠 Project structure
-- `fraud_app/` — Django app containing prediction logic and tests
-- `fraud_project/` — Django project configuration and URL routing
+- `fraud_app/` — Django app with prediction logic and tests
+- `fraud_project/` — Django project config and URL routing
 - `census-income.csv` — dataset used by the training notebook
-- `Income_tax_fraud_detection_updated.ipynb` — updated notebook with the training pipeline
+- `Income_tax_fraud_detection_updated.ipynb` — updated notebook with training and evaluation
 
 ---
 
@@ -26,38 +26,81 @@ This project provides a minimal Django API for predicting income class based on 
    ```bash
    pip install -r requirements.txt
    ```
-2. Start the development server:
+2. Apply migrations before running the server:
+   ```bash
+   python manage.py migrate
+   ```
+3. Start the server:
    ```bash
    python manage.py runserver
    ```
-3. Send a POST request to the prediction endpoint:
-   ```http
-   POST http://127.0.0.1:8000/predict/
-   Content-Type: application/json
-   ```
-
-   Example request body:
-   ```json
-   {
-     "age": 35,
-     "workclass": "Private",
-     "education-num": 10,
-     "marital-status": "Never-married",
-     "occupation": "Other-service",
-     "relationship": "Not-in-family",
-     "race": "White",
-     "sex": "Male",
-     "capital-gain": 1000,
-     "capital-loss": 0,
-     "hours-per-week": 40,
-     "native-country": "United-States"
-   }
+4. Test the API with a POST request:
+   ```bash
+   curl -X POST http://127.0.0.1:8000/predict/ \
+     -H "Content-Type: application/json" \
+     -d '{
+       "age": 35,
+       "workclass": "Private",
+       "education-num": 10,
+       "marital-status": "Never-married",
+       "occupation": "Other-service",
+       "relationship": "Not-in-family",
+       "race": "White",
+       "sex": "Male",
+       "capital-gain": 1000,
+       "capital-loss": 0,
+       "hours-per-week": 40,
+       "native-country": "United-States"
+     }'
    ```
 
 ---
 
+## 🔍 Request payload
+The API accepts these fields in JSON:
+- `age`
+- `workclass`
+- `education-num`
+- `marital-status`
+- `occupation`
+- `relationship`
+- `race`
+- `sex`
+- `capital-gain`
+- `capital-loss`
+- `hours-per-week`
+- `native-country`
+
+---
+
+## ✅ Example response
+```json
+{
+  "prediction": "Likely fraud",
+  "probability": 0.732,
+  "threshold": 0.5,
+  "model_loaded": true,
+  "data": {
+    "age": 35,
+    "workclass": "Private",
+    "education-num": 10,
+    "marital-status": "Never-married",
+    "occupation": "Other-service",
+    "relationship": "Not-in-family",
+    "race": "White",
+    "sex": "Male",
+    "capital-gain": 1000,
+    "capital-loss": 0,
+    "hours-per-week": 40,
+    "native-country": "United-States"
+  }
+}
+```
+
+---
+
 ## 🧪 Verification
-Run Django tests with:
+Run the Django test suite:
 ```bash
 python manage.py test
 ```
@@ -65,5 +108,5 @@ python manage.py test
 ---
 
 ## 💡 Notes
-The API is intentionally simple for test purposes. Future improvements can include a trained model artifact, validation of request inputs, and richer result metadata.
+This repo is designed for a lightweight API test of the prediction flow. The training notebook remains available for model development and dataset exploration.
 
