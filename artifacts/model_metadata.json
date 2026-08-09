@@ -1,13 +1,41 @@
 {
   "model_family": "Gradient Boosting",
-  "holdout_metrics": {
-    "f1": 0.7082824760244115,
-    "roc_auc": 0.9247656138210918,
-    "avg_precision": 0.8217607690948469
-  },
   "best_params": {
-    "classifier__n_estimators": 300,
-    "classifier__max_depth": 4,
-    "classifier__learning_rate": 0.03
+    "classifier__validation_fraction": 0.1,
+    "classifier__subsample": 1.0,
+    "classifier__n_iter_no_change": 10,
+    "classifier__n_estimators": 150,
+    "classifier__max_depth": 3,
+    "classifier__learning_rate": 0.1
+  },
+  "feature_columns": [
+    "age",
+    "workclass",
+    "education-num",
+    "marital-status",
+    "occupation",
+    "relationship",
+    "race",
+    "sex",
+    "capital-gain",
+    "capital-loss",
+    "hours-per-week",
+    "native-country"
+  ],
+  "positive_label": ">50K",
+  "decision_threshold": 0.6608046487376632,
+  "holdout_metrics": {
+    "roc_auc": 0.9238432414828917,
+    "avg_precision": 0.8192800804201058,
+    "f1": 0.7046758213106206
+  },
+  "random_state": 42,
+  "n_train_val_rows": 39073,
+  "n_test_rows": 9769,
+  "environment": {
+    "python": "3.11.0",
+    "scikit_learn": "1.9.0",
+    "pandas": "2.3.3",
+    "numpy": "2.4.6"
   }
 }
