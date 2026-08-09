@@ -107,6 +107,17 @@ python manage.py test
 
 ---
 
+## � Architecture
+See `ARCHITECTURE.md` for a full request-to-response architecture diagram and component flow.
+
+---
+
 ## 💡 Notes
 This repo is designed for a lightweight API test of the prediction flow. The training notebook remains available for model development and dataset exploration.
+
+The API now includes:
+- a root health check at `GET /`
+- a prediction endpoint at `POST /predict/`
+- Swagger/OpenAPI documentation at `/swagger/`
+- an OpenAPI schema at `/api/schema/`
 
