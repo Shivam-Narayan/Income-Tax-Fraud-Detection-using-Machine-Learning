@@ -14,21 +14,6 @@ METADATA_PATH = BASE_DIR / 'artifacts' / 'model_metadata.json'
 POSITIVE_LABEL = '>50K'
 DEFAULT_THRESHOLD = 0.5
 
-SAMPLE_PAYLOAD = {
-    'age': 35,
-    'workclass': 'Private',
-    'education-num': 10,
-    'marital-status': 'Never-married',
-    'occupation': 'Other-service',
-    'relationship': 'Not-in-family',
-    'race': 'White',
-    'sex': 'Male',
-    'capital-gain': 1000,
-    'capital-loss': 0,
-    'hours-per-week': 40,
-    'native-country': 'United-States',
-}
-
 
 def _load_metadata():
     if not METADATA_PATH.exists():
@@ -48,24 +33,6 @@ DECISION_THRESHOLD = float(METADATA.get('decision_threshold', DEFAULT_THRESHOLD)
 
 
 def home(request):
-    return JsonResponse({
-        'message': 'Fraud detection API is running',
-        'status': 'ok',
-        'model_loaded': MODEL is not None,
-        'model_path': str(MODEL_PATH),
-        'decision_threshold': DECISION_THRESHOLD,
-        'endpoints': {
-            'health': {'method': 'GET', 'url': '/'},
-            'predict': {
-                'method': 'POST',
-                'url': '/predict/',
-                'content_type': 'application/json',
-                'sample_body': SAMPLE_PAYLOAD,
-            },
-        },
-    })
-
-
 def _format_prediction(label, probability):
     is_fraud = label == POSITIVE_LABEL or probability >= DECISION_THRESHOLD
     return 'Likely fraud' if is_fraud else 'Likely safe'
