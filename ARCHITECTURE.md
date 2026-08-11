@@ -1,212 +1,263 @@
 # Application Architecture
 
-## Overview
+## Status Summary
 
-This Django app is a lightweight prediction API for income tax/fraud classification. It provides a single POST endpoint, `POST /predict/`, and a root health check at `GET /`.
+This repository currently implements a working machine learning inference API and a modular training pipeline for income-tax fraud detection. The codebase is well structured for an internal MVP or a strong prototype, but it is not yet a fully production-grade deployment.
 
-The architecture is intentionally simple:
-- `fraud_project/` contains the Django project configuration and URL routing
-- `fraud_app/` contains the prediction logic, serializers, and view endpoints
-- `artifacts/` contains the saved model metadata and supporting assets
-- `fraud_detection_ml/` contains the enterprise MLOps pipeline for training, evaluating, and exporting models
-- `census-income.csv` provides the raw training dataset
+The architecture below reflects the current implementation accurately and also highlights the remaining production-hardening steps that should be addressed before going live.
 
-## High-level Flow
+## 1. System Purpose
 
-1. User sends a request to `POST /predict/` with Census Income feature values as JSON.
-2. The API normalizes hyphenated request fields into Python-friendly names.
-3. Validation runs using DRF serializers.
-4. Validated payload is converted into a pandas DataFrame.
-5. The saved model in `fraud_app/model.pkl` predicts a probability.
-6. The app returns a structured JSON response with the result.
+The system performs two related tasks:
 
-## Request-to-Response Flow Diagram
+1. Training and evaluation of fraud-detection models from a tabular census-style dataset.
+2. Serving predictions through a Django REST API using a serialized model artifact.
+
+The solution combines:
+- a Django web/API layer for inference,
+- a Python-based ML training pipeline for preprocessing, model comparison, validation, and artifact export,
+- a model artifact and metadata stored for runtime use.
+
+## 2. High-Level Architecture
 
 ```text
-Client                        Django App                       Model
-  |                               |                              |
-  | POST /predict/                |                              |
-  |------------------------------>|                              |
-  |                               | parse JSON                   |
-  |                               | normalize field names        |
-  |                               | validate with serializer     |
-  |                               |----------------------------->|
-  |                               |                              | load model artifact
-  |                               |                              | prepare DataFrame
-  |                               |                              | predict probability
-  |                               |<-----------------------------|
-  |                               | map probability to label     |
-  |                               | build response JSON          |
-  |<------------------------------|                              |
-  | response with prediction      |                              |
+Client / API Consumer
+        |
+        v
+Django REST API (fraud_app)
+        |
+        |-- Request validation and normalization
+        |
+        v
+Model Artifact + Threshold Metadata
+        |
+        v
+Prediction Response
 ```
 
-## Components
+Training flow:
 
-### `fraud_project/`
-
-- `settings.py`
-  - Registers installed apps: `fraud_app`, `rest_framework`, and `drf_spectacular`
-  - Configures `DEFAULT_SCHEMA_CLASS` for DRF to use `drf_spectacular` OpenAPI generation
-  - Uses SQLite database for Django admin and test support
-
-- `urls.py`
-  - Routes `''` to `fraud_app.urls`
-  - Exposes OpenAPI schema at `/api/schema/`
-  - Exposes Swagger UI at `/swagger/`
-  - Keeps admin available at `/admin/`
-
-### `fraud_app/`
-
-- `views.py`
-  - `home(request)`
-    - A simple health endpoint returning `{ "message": "App is running", "status": "ok" }`
-  - `PredictionInputSerializer`
-    - Validates incoming request fields using DRF serializers
-    - Expects snake_case fields internally, but request payload may include hyphenated names
-  - `PredictionResponseSerializer`
-    - Defines the response structure for OpenAPI schema generation
-  - `predict(request)`
-    - Accepts POST input
-    - Copies and normalizes request fields
-    - Validates input with `PredictionInputSerializer`
-    - Builds a payload with hyphenated feature names for the model
-    - Converts payload to `pandas.DataFrame`
-    - Runs model prediction or fallback logic if the saved model is missing
-    - Returns JSON with `prediction`, `probability`, `threshold`, `model_loaded`, and `data`
-
-- `urls.py`
-  - `path('', views.home, name='home')`
-  - `path('predict/', views.predict, name='predict')`
-
-### `fraud_detection_ml/`
-
-- `src/`
-  - `config.py`: Centralizes constants, feature sets, and paths.
-  - `data_loader.py`: Handles dataset ingestion, cleaning, and train/test splits.
-  - `preprocessing.py`: Defines the Scikit-Learn `ColumnTransformer` for feature scaling and encoding.
-  - `model.py`: Implements model training and hyperparameter tuning (`GridSearchCV`).
-  - `evaluate.py`: Calculates classification metrics (ROC AUC, F1) and visualizes the confusion matrix.
-  - `tflite_export.py`: Converts the trained classifier weights to a TensorFlow Lite model.
-- `tests/`
-  - `pytest` suite validating data integrity and pipeline execution.
-- `train_pipeline.py`
-  - End-to-end orchestration script that loads data, trains the model, and outputs artifacts to `artifacts/` and `fraud_app/`.
-
-### `artifacts/`
-
-- `model_metadata.json`
-  - Contains metadata such as `decision_threshold`
-  - Loaded at startup and used to decide the classification threshold
-
-- `model.pkl`
-  - The trained model artifact used for real inference
-  - If missing, the app currently uses fallback rule logic for testing
-
-## Request Validation and Normalization
-
-The API accepts JSON fields like:
-- `education-num`
-- `marital-status`
-- `capital-gain`
-- `capital-loss`
-- `hours-per-week`
-- `native-country`
-
-These are normalized internally to:
-- `education_num`
-- `marital_status`
-- `capital_gain`
-- `capital_loss`
-- `hours_per_week`
-- `native_country`
-
-This normalization ensures DRF serializers validate clean snake_case field names while still accepting the original dataset-style input keys.
-
-## Prediction Logic
-
-- The model is loaded once at module import time from `fraud_app/model.pkl`.
-- `METADATA` is loaded from `artifacts/model_metadata.json`.
-- `DECISION_THRESHOLD` defaults to `0.5` but can be overridden by metadata.
-- The app computes probability using `model.predict_proba(df)[0, 1]`.
-- It maps the raw probability to a human-friendly label:
-  - `Likely fraud` if the probability is above threshold
-  - `Likely safe` otherwise
-
-If the model file is missing, the service uses a fallback heuristic:
-- `probability = 0.58` if `capital-gain + capital-loss >= 5000`
-- otherwise `probability = 0.42`
-
-## Swagger / OpenAPI Integration
-
-- `drf_spectacular` is used to generate a schema automatically.
-- Schema endpoint: `/api/schema/`
-- Swagger UI: `/swagger/`
-
-The API schema is generated from DRF serializers and view annotations in `fraud_app/views.py`.
-
-## Example Request
-
-```json
-{
-  "age": 35,
-  "workclass": "Private",
-  "education-num": 10,
-  "marital-status": "Never-married",
-  "occupation": "Other-service",
-  "relationship": "Not-in-family",
-  "race": "White",
-  "sex": "Male",
-  "capital-gain": 1000,
-  "capital-loss": 0,
-  "hours-per-week": 40,
-  "native-country": "United-States"
-}
+```text
+Raw Dataset
+  |
+  v
+Data Loader / Validator
+  |
+  v
+Preprocessing Pipeline
+  |
+  v
+Model Comparison and Validation
+  |
+  v
+Selected Model + Metadata + Artifacts
 ```
 
-## Example Response
+## 3. Core Components
 
-```json
-{
-  "prediction": "Likely safe",
-  "probability": 0.054,
-  "threshold": 0.5,
-  "model_loaded": true,
-  "data": {
-    "age": 35,
-    "workclass": "Private",
-    "education-num": 10,
-    "marital-status": "Never-married",
-    "occupation": "Other-service",
-    "relationship": "Not-in-family",
-    "race": "White",
-    "sex": "Male",
-    "capital-gain": 1000,
-    "capital-loss": 0,
-    "hours-per-week": 40,
-    "native-country": "United-States"
-  }
-}
+### 3.1 Django Project Layer
+
+Location: [fraud_project](fraud_project)
+
+Responsibilities:
+- project configuration and Django settings,
+- route registration,
+- OpenAPI/Swagger schema exposure,
+- application startup configuration.
+
+Key files:
+- [fraud_project/settings.py](fraud_project/settings.py)
+- [fraud_project/urls.py](fraud_project/urls.py)
+
+Current characteristics:
+- uses SQLite for local development and testing,
+- exposes a simple health endpoint and a prediction endpoint,
+- includes DRF and drf-spectacular for API documentation.
+
+### 3.2 Inference API Layer
+
+Location: [fraud_app](fraud_app)
+
+Responsibilities:
+- accept prediction requests,
+- normalize input field names,
+- validate request payloads,
+- prepare a DataFrame for the model,
+- invoke the trained model artifact,
+- return prediction probability and label.
+
+Key files:
+- [fraud_app/views.py](fraud_app/views.py)
+- [fraud_app/urls.py](fraud_app/urls.py)
+
+Current behavior:
+- the health route returns a simple status payload,
+- the prediction route accepts JSON payloads and validates them with DRF serializers,
+- the model is loaded from a pickled artifact at startup,
+- the decision threshold is read from metadata.
+
+### 3.3 Machine Learning Training Layer
+
+Location: [fraud_detection_ml](fraud_detection_ml)
+
+Responsibilities:
+- ingest and validate raw tabular data,
+- split data into train/validation/test subsets,
+- preprocess feature columns,
+- compare several candidate model families,
+- select the best model using validation performance,
+- export the selected model and metadata.
+
+Key files:
+- [fraud_detection_ml/src/data_loader.py](fraud_detection_ml/src/data_loader.py)
+- [fraud_detection_ml/src/preprocessing.py](fraud_detection_ml/src/preprocessing.py)
+- [fraud_detection_ml/src/model.py](fraud_detection_ml/src/model.py)
+- [fraud_detection_ml/src/evaluate.py](fraud_detection_ml/src/evaluate.py)
+- [fraud_detection_ml/train_pipeline.py](fraud_detection_ml/train_pipeline.py)
+
+Current behavior:
+- multiple model types are compared,
+- validation is used to pick the best model,
+- the best model is then evaluated on the test split,
+- the final pipeline is serialized for inference.
+
+### 3.4 Artifacts and Metadata
+
+Location: [artifacts](artifacts)
+
+Responsibilities:
+- persist trained model binaries,
+- persist model metadata such as threshold information,
+- support versioned and reproducible inference.
+
+Current artifacts:
+- [artifacts/model_metadata.json](artifacts/model_metadata.json)
+- [fraud_app/model.pkl](fraud_app/model.pkl)
+
+## 4. Request-to-Response Flow
+
+### Inference Flow
+
+1. A client sends a POST request to the prediction endpoint.
+2. The API normalizes hyphenated input names to the internal snake_case structure.
+3. DRF validates the payload.
+4. The validated payload is converted into a pandas DataFrame.
+5. The runtime model artifact is loaded.
+6. The model predicts a probability.
+7. The system maps the probability to a label using the configured threshold.
+8. The API returns a JSON response with prediction, probability, threshold, and input data.
+
+### Training Flow
+
+1. The training pipeline loads the dataset from the configured CSV path.
+2. Data is cleaned and validated.
+3. Feature columns and the target column are separated.
+4. The data is split into train, validation, and test sets.
+5. Candidate models are fitted and compared on the validation set.
+6. The best pipeline is evaluated on the holdout test set.
+7. The selected model is serialized and exported for inference.
+
+## 5. Data Contract
+
+The API currently expects fields such as:
+- age
+- workclass
+- education_num
+- marital_status
+- occupation
+- relationship
+- race
+- sex
+- capital_gain
+- capital_loss
+- hours_per_week
+- native_country
+
+The request layer also supports dataset-style hyphenated keys such as:
+- education-num
+- marital-status
+- capital-gain
+- capital-loss
+- hours-per-week
+- native-country
+
+This makes the API compatible with both modern snake_case payloads and the original CSV-style field names.
+
+## 6. Design Strengths
+
+The current architecture already shows several good engineering practices:
+- clear separation between training and inference,
+- modular ML source code under a dedicated package,
+- reusable preprocessing and model-building components,
+- explicit evaluation metrics and validation-based model selection,
+- test coverage for data and model logic,
+- API schema generation for documentation.
+
+## 7. Production Gaps to Address
+
+The architecture is strong for an MVP, but it is not yet fully production-grade. The main gaps are:
+
+### Security
+- secret keys are currently hard-coded in settings,
+- authentication and authorization are not yet implemented for the API,
+- request throttling and input abuse protection are not present.
+
+### Reliability and Operations
+- there is no centralized logging and metrics pipeline,
+- there is no model monitoring for drift or performance regression,
+- the fallback logic should not be relied on in production deployments.
+
+### Deployment and Scale
+- the current setup is designed for local development and simple hosting,
+- containerization, orchestration, and CI/CD are not yet part of the architecture,
+- artifact storage and model versioning should be managed through a proper registry or object store.
+
+### Data Governance
+- there is no formal feature store or schema registry,
+- input validation should be expanded for stricter contract enforcement,
+- retraining and rollback policies should be defined.
+
+## 8. Production-Ready Target Architecture
+
+A production-ready version of this solution should evolve toward the following model:
+
+```text
+Client
+  |
+  v
+API Gateway / Load Balancer
+  |
+  v
+Django API Services
+  |
+  +--> Input validation
+  +--> Authentication / authorization
+  +--> Logging / tracing / metrics
+  +--> Model inference service
+  |
+  v
+Model Registry / Artifact Store
+  |
+  v
+Training Pipeline / Retraining Job
+  |
+  v
+Monitoring and Alerting
 ```
 
-## Running the App
+Recommended production additions:
+- environment-based configuration instead of hard-coded values,
+- containerized deployment with Docker,
+- application monitoring with Prometheus/Grafana or equivalent,
+- structured logging and request tracing,
+- automated CI/CD pipelines,
+- model versioning and rollback support,
+- stricter authentication and rate limiting.
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Apply database migrations:
-   ```bash
-   python manage.py migrate
-   ```
-3. Start the server:
-   ```bash
-   python manage.py runserver
-   ```
-4. View Swagger UI at `http://127.0.0.1:8000/swagger/`
+## 9. Conclusion
 
-## Notes
+The current architecture is a solid foundation for a machine-learning-powered API and is reasonably well aligned with the code that exists today. It is not yet “perfectly production-level,” but it is close enough to serve as a strong MVP and a good base for production hardening.
 
-- The service is built for testing/demo purposes.
-- It supports a minimal API surface with only prediction and health endpoints.
-- The enterprise ML training pipeline (`fraud_detection_ml/`) is modular and separate from the API runtime, ensuring production readiness and ease of testing.
+In short:
+- Current state: good prototype and internal deployment candidate.
+- Production target: requires security, observability, deployment, and governance improvements.
