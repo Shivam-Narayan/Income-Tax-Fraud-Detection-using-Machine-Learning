@@ -5,6 +5,11 @@ from django.urls import reverse
 
 
 class FraudAppTests(SimpleTestCase):
+    def test_home_endpoint(self):
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'ok')
+
     def test_prediction_form_post(self):
         response = self.client.post(reverse('predict'), {
             'age': '35',
@@ -48,3 +53,8 @@ class FraudAppTests(SimpleTestCase):
         body = response.json()
         self.assertTrue(body['model_loaded'])
         self.assertIn('probability', body)
+
+    def test_prediction_rejects_missing_required_fields(self):
+        response = self.client.post(reverse('predict'), {'age': '35'})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('workclass', response.json())
