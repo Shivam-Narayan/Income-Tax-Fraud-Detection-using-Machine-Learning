@@ -8,7 +8,8 @@ The architecture is intentionally simple:
 - `fraud_project/` contains the Django project configuration and URL routing
 - `fraud_app/` contains the prediction logic, serializers, and view endpoints
 - `artifacts/` contains the saved model metadata and supporting assets
-- `census-income.csv` and Jupyter notebooks provide training data and experiment history
+- `fraud_detection_ml/` contains the enterprise MLOps pipeline for training, evaluating, and exporting models
+- `census-income.csv` provides the raw training dataset
 
 ## High-level Flow
 
@@ -77,6 +78,20 @@ Client                        Django App                       Model
 - `urls.py`
   - `path('', views.home, name='home')`
   - `path('predict/', views.predict, name='predict')`
+
+### `fraud_detection_ml/`
+
+- `src/`
+  - `config.py`: Centralizes constants, feature sets, and paths.
+  - `data_loader.py`: Handles dataset ingestion, cleaning, and train/test splits.
+  - `preprocessing.py`: Defines the Scikit-Learn `ColumnTransformer` for feature scaling and encoding.
+  - `model.py`: Implements model training and hyperparameter tuning (`GridSearchCV`).
+  - `evaluate.py`: Calculates classification metrics (ROC AUC, F1) and visualizes the confusion matrix.
+  - `tflite_export.py`: Converts the trained classifier weights to a TensorFlow Lite model.
+- `tests/`
+  - `pytest` suite validating data integrity and pipeline execution.
+- `train_pipeline.py`
+  - End-to-end orchestration script that loads data, trains the model, and outputs artifacts to `artifacts/` and `fraud_app/`.
 
 ### `artifacts/`
 
@@ -194,4 +209,4 @@ The API schema is generated from DRF serializers and view annotations in `fraud_
 
 - The service is built for testing/demo purposes.
 - It supports a minimal API surface with only prediction and health endpoints.
-- The training notebook and dataset are kept separately from the API runtime code.
+- The enterprise ML training pipeline (`fraud_detection_ml/`) is modular and separate from the API runtime, ensuring production readiness and ease of testing.
