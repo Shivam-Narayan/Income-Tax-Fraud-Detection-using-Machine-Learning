@@ -1,5 +1,10 @@
 import json
 import joblib
+import datetime
+import platform
+import pandas as pd
+import numpy as np
+import sklearn
 from pathlib import Path
 
 from src.config import (
@@ -7,24 +12,29 @@ from src.config import (
     MODEL_PATH, 
     METADATA_PATH,
     ARTIFACT_DIR,
-    logger
+    logger,
+    VALIDATION_SIZE,
+    RANDOM_STATE,
+    FEATURE_COLUMNS,
+    TARGET_COLUMN,
 )
 from sklearn.model_selection import train_test_split
 
-from src.data_loader import load_data, get_train_test_split
+from src.data_loader import load_data, get_train_test_split, compute_data_hash
 from src.preprocessing import build_preprocessor
 from src.model import train_model
 from src.evaluate import evaluate_model
 from src.tflite_export import export_to_tflite
-from src.config import RANDOM_STATE
 
 def main():
-    logger.info("Starting Income Tax Fraud ML Pipeline...")
+    logger.info("Starting Enterprise-Grade ML Pipeline...")
+    start_time = datetime.datetime.now(datetime.timezone.utc)
 
     try:
         # 1. Load Data
         logger.info("Loading dataset from %s", DATA_PATH)
         df = load_data(DATA_PATH)
+        data_hash = compute_data_hash(df)
 
         # 2. Split Data
         logger.info("Splitting dataset into train/validation/test sets")
@@ -32,7 +42,7 @@ def main():
         X_train, X_val, y_train, y_val = train_test_split(
             X_train,
             y_train,
-            test_size=0.2,
+            test_size=VALIDATION_SIZE,
             random_state=RANDOM_STATE,
             stratify=y_train,
         )
@@ -53,11 +63,32 @@ def main():
         logger.info("Saving model to %s", MODEL_PATH)
         joblib.dump(best_pipeline, MODEL_PATH)
 
+        end_time = datetime.datetime.now(datetime.timezone.utc)
+        
         metadata = {
+            "model_info": {
+                "version": "1.1.0",
+                "selected_model": comparison.get("best_model_name", "unknown"),
+                "description": f"Model selected by validation F1 from the comparison workflow: {comparison.get('best_model_name', 'unknown')}.",
+            },
+            "training_info": {
+                "start_time_utc": start_time.isoformat(),
+                "end_time_utc": end_time.isoformat(),
+                "duration_seconds": (end_time - start_time).total_seconds(),
+                "data_hash_sha256": data_hash,
+            },
+            "environment": {
+                "python_version": platform.python_version(),
+                "scikit_learn_version": sklearn.__version__,
+                "pandas_version": pd.__version__,
+                "numpy_version": np.__version__,
+                "joblib_version": joblib.__version__,
+            },
+            "features": {
+                "feature_columns": FEATURE_COLUMNS,
+                "target_column": TARGET_COLUMN,
+            },
             "metrics": metrics,
-            "model_version": "1.0.0",
-            "selected_model": comparison.get("best_model_name", "unknown"),
-            "description": f"Model selected by validation F1 from the comparison workflow: {comparison.get('best_model_name', 'unknown')}."
         }
 
         with open(METADATA_PATH, 'w', encoding='utf-8') as f:

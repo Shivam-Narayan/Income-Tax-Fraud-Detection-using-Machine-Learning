@@ -66,11 +66,17 @@ METADATA_PATH = Path(_get_env("METADATA_PATH", str(ARTIFACT_DIR / "model_metadat
 if not METADATA_PATH.is_absolute():
     METADATA_PATH = (PROJECT_ROOT / METADATA_PATH).resolve()
 
+from sklearn.metrics import f1_score, make_scorer
+
 POSITIVE_LABEL = ">50K"
 NEGATIVE_LABEL = "<=50K"
 TEST_SIZE = _get_env("TEST_SIZE", 0.20, float)
+# 25% of the remaining 80% → 20% of the full dataset, matching the notebook
+VALIDATION_SIZE = _get_env("VALIDATION_SIZE", 0.25, float)
 CV_FOLDS = _get_env("CV_FOLDS", 5, int)
 N_JOBS = _get_env("N_JOBS", -1, int)
+# Number of random parameter combinations to try per model during tuning
+N_ITER_SEARCH = _get_env("N_ITER_SEARCH", 20, int)
 
 FEATURE_COLUMNS = [
     "age",
@@ -99,3 +105,46 @@ CATEGORICAL_FEATURES = [
 ]
 
 NUMERIC_FEATURES = [c for c in FEATURE_COLUMNS if c not in CATEGORICAL_FEATURES]
+
+# Centralized F1 scorer — avoids the `scoring="f1"` bug where pos_label=1 doesn't
+# match string labels like "<=50K" / ">50K".
+F1_SCORER = make_scorer(f1_score, pos_label=POSITIVE_LABEL, zero_division=0)
+
+# Expected schema for runtime validation of the input dataframe.
+EXPECTED_SCHEMA = {
+    "age": "int64",
+    "workclass": "object",
+    "education-num": "int64",
+    "marital-status": "object",
+    "occupation": "object",
+    "relationship": "object",
+    "race": "object",
+    "sex": "object",
+    "capital-gain": "int64",
+    "capital-loss": "int64",
+    "hours-per-week": "int64",
+    "native-country": "object",
+    "income": "object",
+}
+
+
+def validate_dataframe(df, context: str = "input") -> None:
+    """Validate that a dataframe matches the expected schema and basic quality checks."""
+    missing_cols = set(EXPECTED_SCHEMA.keys()) - set(df.columns)
+    if missing_cols:
+        raise ValueError(f"[{context}] Missing required columns: {missing_cols}")
+
+    # Check target column is not all one class
+    target_counts = df[TARGET_COLUMN].value_counts(normalize=True)
+    if len(target_counts) < 2:
+        raise ValueError(f"[{context}] Target column '{TARGET_COLUMN}' has only one class")
+    minority_ratio = target_counts.min()
+    if minority_ratio < 0.01:
+        logger.warning(
+            "[%s] Extreme class imbalance detected: minority class is %.2f%% of data",
+            context, minority_ratio * 100,
+        )
+
+    # Log data summary
+    logger.info("[%s] Shape: %s, Target distribution: %s", context, df.shape,
+                target_counts.to_dict())
