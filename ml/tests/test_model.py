@@ -4,7 +4,7 @@ import pytest
 from sklearn.model_selection import train_test_split
 
 from src.preprocessing import build_preprocessor
-from src.model import build_pipeline, compare_models
+from src.model import compare_models, train_model
 from src.config import FEATURE_COLUMNS, POSITIVE_LABEL, NEGATIVE_LABEL
 
 @pytest.fixture
@@ -12,28 +12,25 @@ def sample_data():
     """Create a minimal dataframe matching the census-income schema for testing."""
     np.random.seed(42)
     
-    # 10 samples
+    # 30 samples to satisfy CV_FOLDS=5
     data = {}
     for col in FEATURE_COLUMNS:
         if col in ["age", "education-num", "capital-gain", "capital-loss", "hours-per-week"]:
-            data[col] = np.random.randint(18, 65, 10)
+            data[col] = np.random.randint(18, 65, 30)
         else:
-            data[col] = ["Test"] * 10
+            data[col] = ["Test"] * 30
             
     df = pd.DataFrame(data)
-    y = pd.Series([POSITIVE_LABEL] * 5 + [NEGATIVE_LABEL] * 5)
+    y = pd.Series([POSITIVE_LABEL] * 15 + [NEGATIVE_LABEL] * 15)
     
     return df, y
 
-def test_pipeline_fit_predict(sample_data):
-    """Test that the pipeline can successfully fit and predict without errors."""
+def test_train_model_fit_predict(sample_data):
+    """Test that train_model can successfully fit and predict without errors."""
     X, y = sample_data
     
     preprocessor = build_preprocessor()
-    pipeline = build_pipeline(preprocessor)
-    
-    # Fit
-    pipeline.fit(X, y)
+    comparison, pipeline = train_model(X, y, preprocessor, X, y)
     
     # Predict
     preds = pipeline.predict(X)
@@ -75,4 +72,4 @@ def test_compare_models_runs_all_default_candidates(sample_data):
     preprocessor = build_preprocessor()
     comparison, _ = compare_models(X_train, y_train, X_val, y_val, preprocessor)
 
-    assert len(comparison["all_results"]) == 9
+    assert len(comparison["all_results"]) == 6

@@ -11,9 +11,9 @@ logger = logging.getLogger("fraud-detection")
 
 
 def resolve_project_root() -> Path:
-    """Find the folder that contains census-income.csv (works in Jupyter and CLI)."""
+    """Find the root folder that contains the data directory (works in Jupyter and CLI)."""
     for candidate in [Path.cwd(), *Path.cwd().parents]:
-        if (candidate / "census-income.csv").exists():
+        if (candidate / "data" / "census-income.csv").exists():
             return candidate
     return Path.cwd()
 
@@ -50,7 +50,7 @@ def _get_env(name: str, default, cast=None):
 # --- Reproducibility & paths ---
 RANDOM_STATE = _get_env("RANDOM_STATE", 42, int)
 
-DATA_PATH = Path(_get_env("DATA_PATH", str(PROJECT_ROOT / "census-income.csv")))
+DATA_PATH = Path(_get_env("DATA_PATH", str(PROJECT_ROOT / "data" / "census-income.csv")))
 if not DATA_PATH.is_absolute():
     DATA_PATH = (PROJECT_ROOT / DATA_PATH).resolve()
 

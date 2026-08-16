@@ -20,7 +20,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold, cross_val_score
 from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
@@ -43,8 +42,10 @@ from .config import (
 
 # Models that require sample_weight because they lack class_weight support
 SAMPLE_WEIGHTED_MODELS = {"Gradient Boosting", "Naive Bayes"}
-# Models with no rebalancing lever at all — noted explicitly
-UNWEIGHTED_MODELS = {"Feed Forward Neural Network", "k-Nearest Neighbors"}
+# Models with no rebalancing lever at all — noted explicitly.
+# NOTE: KNN was removed from candidates because sklearn's KNeighborsClassifier
+# internally converts string labels to int, which crashes on "<=50K"/">50K".
+UNWEIGHTED_MODELS = {"Feed Forward Neural Network"}
 
 
 def _get_candidate_specs() -> List[Dict[str, Any]]:

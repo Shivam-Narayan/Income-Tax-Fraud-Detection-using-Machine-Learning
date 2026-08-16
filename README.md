@@ -1,25 +1,24 @@
 # 📌 Income Tax Fraud Detection Project
 
 ## 🚀 Overview
-This repository contains a complete end-to-end machine learning workflow for training, validating, evaluating, and exporting a model from a CSV dataset. It also includes a Django API that can load the exported model for prediction.
+This repository contains a complete end-to-end enterprise-grade machine learning workflow for training, validating, evaluating, and exporting a model from a CSV dataset. It also includes a Django API that can load the exported model for prediction.
 
-This project is designed so that anyone can start from scratch with a new dataset and follow the same process:
-1. load data
-2. clean and validate it
-3. split into train / validation / test sets
-4. compare multiple models
-5. select the best one
-6. evaluate it
-7. export the final model as a `.pkl` file
+This project implements modern ML best practices:
+1. **Data Loader:** Schema validation, data quality assertions, and SHA-256 data hashing.
+2. **Preprocessing:** Configurable pipelines, automated feature engineering (`net_capital`, `log_capital_gain`), and leakage-safe scaling/encoding.
+3. **Model Selection:** Automated cross-validation with `RandomizedSearchCV` across multiple model architectures, handling class imbalance natively or via sample weights, and 95% CI metrics.
+4. **Diagnostics:** Full evaluation suite including ROC, Precision-Recall, Calibration curves, and structured feature importance.
+5. **Serialization:** Exports to both standard Scikit-Learn `.pkl` and edge-ready TensorFlow Lite (`.tflite`) formats, alongside a rich JSON metadata artifact tracking execution environments and evaluation metrics.
 
 ---
 
 ## 🧠 Project structure
-- `fraud_detection_ml/` — training pipeline, preprocessing, model comparison, evaluation, and export
+- `fraud_detection_ml/` — Modular training pipeline (`src/`), preprocessing, model comparison, evaluation, and export
 - `fraud_app/` — Django app that loads the exported model for prediction
 - `fraud_project/` — Django project configuration
 - `census-income.csv` — sample dataset used by the training pipeline
-- `Income_tax_fraud_detection_updated.ipynb` — notebook reference for the modeling workflow
+- `Income_tax_fraud_detection_updated.ipynb` — Interactive notebook demonstrating the modeling workflow
+- `artifacts/` — Generated directory containing trained models (`model.pkl`, `model.tflite`), diagnostics plots, and `model_metadata.json`
 
 ---
 
@@ -49,18 +48,23 @@ From the `fraud_detection_ml` folder, run:
 c:/Projects/fraud-detection/.venv-1/Scripts/python.exe train_pipeline.py
 ```
 
-This will:
-- load the dataset
-- split it into train, validation, and test sets
-- compare multiple models
-- select the best-performing one
-- evaluate it on the test set
-- export the final model as `.pkl`
+This will automatically:
+- Load the dataset and run schema validation
+- Generate target-stratified train, validation, and test splits
+- Perform automated feature engineering
+- Compare multiple models using randomized hyperparameter search inside cross-validation
+- Evaluate the best model on the holdout test set, generating diagnostic plots
+- Export the final model to `.pkl` and `.tflite`
+- Write comprehensive tracking data to `model_metadata.json`
 
 ### Exported model files
-The trained model is saved to:
-- `fraud_app/model.pkl`
-- `artifacts/model.pkl`
+The trained artifacts are saved to `artifacts/`:
+- `model.pkl` (Scikit-Learn Pipeline)
+- `model.tflite` (TensorFlow Lite Model)
+- `model_metadata.json`
+- Diagnostics: `roc_curve.png`, `pr_curve.png`, `calibration_curve.png`, `feature_importance.png`, `confusion_matrix.png`
+
+The `.pkl` is also automatically copied to `fraud_app/model.pkl` for immediate Django integration.
 
 ---
 
@@ -80,6 +84,7 @@ To use a different dataset from scratch:
 2. Update the expected columns in `fraud_detection_ml/src/config.py`:
    - `FEATURE_COLUMNS`
    - `TARGET_COLUMN`
+   - `EXPECTED_SCHEMA`
 3. Make sure the dataset has the same feature names expected by the pipeline.
 4. Run:
    ```powershell
@@ -109,7 +114,6 @@ If you want to use the exported model inside the API:
 ---
 
 ## 💡 Notes
-- The ML workflow is designed to be reproducible and easy to extend.
-- The model comparison step evaluates multiple classifier families and selects the best one by validation performance.
-- For production use, you should later add experiment tracking, model monitoring, and better deployment practices.
-
+- The ML workflow is designed to be highly reproducible and easy to extend via the `src/` modules.
+- The model comparison step evaluates multiple classifier families, handling imbalanced datasets systematically through `class_weight` and `sample_weight`.
+- For production use, consider tracking the rich `model_metadata.json` output via an experiment tracker (like MLflow) and integrating the pipeline directly into CI/CD.

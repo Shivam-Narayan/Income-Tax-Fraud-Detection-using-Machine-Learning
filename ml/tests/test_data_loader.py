@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from src.data_loader import clean_census_frame, validate_dataset
+from src.data_loader import clean_census_frame, _validate_dataset
 
 def test_clean_census_frame():
     """Test that missing values are correctly replaced with np.nan and whitespace is stripped."""
@@ -28,7 +28,7 @@ def test_validate_dataset_missing_columns():
     # Create an empty dataframe
     df = pd.DataFrame()
     with pytest.raises(ValueError, match="Missing expected columns"):
-        validate_dataset(df)
+        _validate_dataset(df)
 
 def test_validate_dataset_invalid_target():
     """Test that validating a dataset with invalid targets raises ValueError."""
@@ -42,4 +42,4 @@ def test_validate_dataset_invalid_target():
     df = pd.DataFrame(data)
     
     with pytest.raises(ValueError, match="Target values do not match expected labels"):
-        validate_dataset(df)
+        _validate_dataset(df)

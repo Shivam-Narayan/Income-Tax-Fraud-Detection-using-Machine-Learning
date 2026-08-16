@@ -11,12 +11,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.serializers import BooleanField, CharField, FloatField, IntegerField, JSONField, Serializer
 
-from fraud_detection_ml.src.config import logger as ml_logger
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-CANONICAL_MODEL_PATH = BASE_DIR / 'artifacts' / 'model.pkl'
+PROJECT_ROOT = BASE_DIR.parent
+CANONICAL_MODEL_PATH = PROJECT_ROOT / 'artifacts' / 'model.pkl'
 LEGACY_MODEL_PATH = BASE_DIR / 'fraud_app' / 'model.pkl'
-METADATA_PATH = BASE_DIR / 'artifacts' / 'model_metadata.json'
+METADATA_PATH = PROJECT_ROOT / 'artifacts' / 'model_metadata.json'
 
 POSITIVE_LABEL = '>50K'
 DEFAULT_THRESHOLD = 0.5
@@ -37,13 +37,13 @@ def _build_model():
             continue
         try:
             model = joblib.load(candidate)
-            ml_logger.info("Loaded model artifact from %s", candidate)
+            logger.info("Loaded model artifact from %s", candidate)
             return model
         except Exception:
-            ml_logger.exception("Failed to load model artifact from %s", candidate)
+            logger.exception("Failed to load model artifact from %s", candidate)
             return None
 
-    ml_logger.warning("Model artifact was not found in %s or %s", CANONICAL_MODEL_PATH, LEGACY_MODEL_PATH)
+    logger.warning("Model artifact was not found in %s or %s", CANONICAL_MODEL_PATH, LEGACY_MODEL_PATH)
     return None
 
 
