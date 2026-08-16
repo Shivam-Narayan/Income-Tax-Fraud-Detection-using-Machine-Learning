@@ -1,9 +1,26 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-demo-key'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+
+
+def _get_env(name: str, default=None):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value
+
+
+def _get_bool_env(name: str, default: bool = False) -> bool:
+    value = _get_env(name)
+    if value is None:
+        return default
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+SECRET_KEY = _get_env('DJANGO_SECRET_KEY', 'django-insecure-demo-key')
+DEBUG = _get_bool_env('DJANGO_DEBUG', True)
+ALLOWED_HOSTS = [host.strip() for host in _get_env('DJANGO_ALLOWED_HOSTS', '*').split(',') if host.strip()]
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -16,6 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fraud_app',
+    'rest_framework',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -46,10 +65,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'fraud_project.wsgi.application'
-DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3'}}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': _get_env('DB_NAME', str(BASE_DIR / 'db.sqlite3')),
+    }
+}
 AUTH_PASSWORD_VALIDATORS = []
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
